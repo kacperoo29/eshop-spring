@@ -1,0 +1,28 @@
+version: '3.9'
+services:
+  db:
+    image: postgres
+    ports:
+      - 54321:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=SY2Z74RzUx8Afs6d
+  api:
+    build: ./API
+    ports:
+      - 5000:8080
+    depends_on:
+      - db
+    volumes:
+      - /app/.gradle
+      - /root/.gradle
+  client:
+    build: ./Client
+    ports:
+      - 4000:3000
+    depends_on:
+      - api
+    volumes:
+      - ./Client/eshop/src:/app/src
+      - ./Client/eshop/public:/app/public
+      - /app/node_modules
