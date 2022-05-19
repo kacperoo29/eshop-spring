@@ -1,4 +1,4 @@
-package com.kbaje.eshop.Dto;
+package com.kbaje.eshop.dto;
 
 public class CreateProductDto {
 

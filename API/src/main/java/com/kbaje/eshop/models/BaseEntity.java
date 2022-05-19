@@ -9,13 +9,13 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public abstract class BaseModel {
+public abstract class BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     protected UUID id;
     protected LocalDateTime dateCreated;
 
-    protected BaseModel() {
+    protected BaseEntity() {
         super();
 
         id = UUID.randomUUID();
@@ -29,4 +29,5 @@ public abstract class BaseModel {
     public UUID getId() {
         return id;
     }
+    
 }

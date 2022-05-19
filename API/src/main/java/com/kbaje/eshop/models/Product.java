@@ -3,7 +3,7 @@ package com.kbaje.eshop.models;
 import javax.persistence.Entity;
 
 @Entity
-public final class Product extends BaseModel {
+public final class Product extends BaseEntity {
     private String name;
     private String description;
 
@@ -29,4 +29,13 @@ public final class Product extends BaseModel {
     public static Product Create(String name, String description) {
         return new Product(name, description);
     }
+
+    public void editName(String name) {
+        this.name = name;
+    }
+
+    public void editDescription(String description) {
+        this.description = description;
+    }
+
 }
