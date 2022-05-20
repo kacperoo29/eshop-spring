@@ -1,7 +1,7 @@
 package com.kbaje.eshop.mapping;
 
 import com.kbaje.eshop.dto.UserDto;
-import com.kbaje.eshop.models.User;
+import com.kbaje.eshop.models.AppUser;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -11,7 +11,7 @@ public interface UserMapper {
     
     UserMapper Instance = Mappers.getMapper(UserMapper.class);
 
-    UserDto mapToDto(User user);
+    UserDto mapToDto(AppUser user);
 
-    Iterable<UserDto> mapMultipleToDto(Iterable<User> users);
+    Iterable<UserDto> mapMultipleToDto(Iterable<AppUser> users);
 }

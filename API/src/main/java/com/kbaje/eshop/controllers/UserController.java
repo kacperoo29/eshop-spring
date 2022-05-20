@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/checkout")
+@RequestMapping("/api/user")
 public class UserController {
     
     @Autowired
@@ -21,7 +21,7 @@ public class UserController {
 
     @PostMapping("authenticate")
     public AuthDto authenticate(@RequestBody AuthRequestDto payload) {
-        return new AuthDto(false, "");
+        return userService.authenticate(payload);
     }
 
     @PostMapping("createUser")

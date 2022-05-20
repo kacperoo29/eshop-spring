@@ -34,7 +34,7 @@ public class ProductService {
     }
 
     public ProductDto createProduct(CreateProductDto payload) {
-        Product entity = Product.Create(payload.name, payload.description);
+        Product entity = Product.create(payload.name, payload.description);
         Product product = repository.save(entity);
 
         return mapper.mapToDto(product);

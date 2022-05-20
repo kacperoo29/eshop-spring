@@ -1,5 +1,10 @@
 package com.kbaje.eshop.models;
 
-public class Cart extends BaseEntity {
+import javax.persistence.Entity;
 
+@Entity
+public class Cart extends BaseEntity {
+    protected Cart() {
+        
+    }
 }

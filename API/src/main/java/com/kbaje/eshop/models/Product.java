@@ -26,7 +26,7 @@ public final class Product extends BaseEntity {
         return description;
     }
 
-    public static Product Create(String name, String description) {
+    public static Product create(String name, String description) {
         return new Product(name, description);
     }
 
