@@ -13,6 +13,7 @@ import com.kbaje.eshop.services.repositories.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,6 +34,10 @@ public class UserService implements UserDetailsService {
     private AccessTokenProvider accessTokenProvider;
 
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    public UserDetails getCurrent() {
+        return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
 
     public UserDto getById(UUID id) {
         return userMapper.mapToDto(userRepository.findById(id).get());

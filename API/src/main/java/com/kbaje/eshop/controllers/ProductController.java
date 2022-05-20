@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 @RestController
 @RequestMapping("/api/product")
 public class ProductController {
@@ -26,26 +29,31 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    @Operation(summary = "Get product by id", description = "Get product by id")
     @GetMapping("getById/{id}")
     public ProductDto getById(@PathVariable UUID id) {
         return productService.getById(id);
     }
 
+    @Operation(summary = "Get all products", description = "Get all products")
     @GetMapping("getAll")
     public Iterable<ProductDto> get() {
         return productService.getAll();
     }
 
+    @Operation(summary = "Create product", description = "Create product", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping("create")
     public ProductDto create(@RequestBody CreateProductDto payload) {
         return productService.createProduct(payload);
     }
 
+    @Operation(summary = "Edit product", description = "Edit product", security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping("edit/{id}")
     public ProductDto edit(@PathVariable UUID id, @RequestBody EditProductDto payload) {
         return productService.editProduct(id, payload);
     }
 
+    @Operation(summary = "Delete product", description = "Delete product", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping("remove/{id}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void remove(@PathVariable UUID id) {

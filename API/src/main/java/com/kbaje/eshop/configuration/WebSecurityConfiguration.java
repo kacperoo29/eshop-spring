@@ -1,8 +1,10 @@
 package com.kbaje.eshop.configuration;
 
 import com.kbaje.eshop.filters.AccessTokenPreAuthFilter;
+import com.kbaje.eshop.services.JwtTokenProvider;
 import com.kbaje.eshop.services.UserService;
 
+import com.kbaje.eshop.services.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -34,7 +36,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     );
 
     @Autowired
-    private UserService userService;    
+    private UserService userService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -44,7 +49,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .addFilterBefore(new AccessTokenPreAuthFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new AccessTokenPreAuthFilter(new JwtTokenProvider(this.userRepository)), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .requestMatchers(PROTECTED_ULRS)
                 .authenticated()

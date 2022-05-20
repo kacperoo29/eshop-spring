@@ -9,14 +9,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.kbaje.eshop.services.AccessTokenProvider;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 public class AccessTokenPreAuthFilter extends OncePerRequestFilter {
-    
-    @Autowired
+
     private AccessTokenProvider accessTokenProvider;
+
+    public AccessTokenPreAuthFilter(AccessTokenProvider tokenProvider) {
+        this.accessTokenProvider = tokenProvider;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -24,9 +28,10 @@ public class AccessTokenPreAuthFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String accessToken = authHeader.substring(7);
-            Authentication authentication = accessTokenProvider.getAuthentication(accessToken);
+            UsernamePasswordAuthenticationToken authentication = accessTokenProvider.getAuthentication(accessToken);
             if (authentication != null) {
-                request.setAttribute("authentication", authentication);
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
         

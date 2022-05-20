@@ -10,6 +10,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -28,7 +29,7 @@ public class AppUser extends BaseEntity implements UserDetails {
 
     private String password;
 
-    @ElementCollection(targetClass = Authority.class)
+    @ElementCollection(targetClass = Authority.class, fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_authorities", joinColumns = @JoinColumn(name = "user_id"))
     private List<Authority> authorities;
@@ -60,7 +61,7 @@ public class AppUser extends BaseEntity implements UserDetails {
     public static AppUser create(String username, String email, String password) {
         PasswordEncoder encoder = new BCryptPasswordEncoder();
         AppUser user = new AppUser(username, email, encoder.encode(password));
-        user.authorities.add(Authority.USER);
+        user.authorities.add(Authority.ROLE_USER);
 
         return user;
     }
