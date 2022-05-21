@@ -15,8 +15,6 @@ import javax.persistence.JoinColumn;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 public class AppUser extends BaseEntity implements UserDetails {
@@ -59,9 +57,8 @@ public class AppUser extends BaseEntity implements UserDetails {
     }
 
     public static AppUser create(String username, String email, String password) {
-        PasswordEncoder encoder = new BCryptPasswordEncoder();
-        AppUser user = new AppUser(username, email, encoder.encode(password));
-        user.authorities.add(Authority.ROLE_USER);
+        AppUser user = new AppUser(username, email, password);
+        user.authorities.add(Authority.USER);
 
         return user;
     }

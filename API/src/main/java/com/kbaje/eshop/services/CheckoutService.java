@@ -1,10 +1,18 @@
 package com.kbaje.eshop.services;
 
-import com.kbaje.eshop.dto.CartDto;
-import com.kbaje.eshop.mapping.CartMapper;
-import com.kbaje.eshop.services.repositories.CartRepository;
+import java.util.UUID;
 
-import org.apache.commons.lang3.NotImplementedException;
+import com.kbaje.eshop.dto.AddProductToCartDto;
+import com.kbaje.eshop.dto.CartDto;
+import com.kbaje.eshop.mapping.MapperProfile;
+import com.kbaje.eshop.models.AppUser;
+import com.kbaje.eshop.models.Cart;
+import com.kbaje.eshop.models.CartProduct;
+import com.kbaje.eshop.models.Product;
+import com.kbaje.eshop.services.repositories.CartProductRepository;
+import com.kbaje.eshop.services.repositories.CartRepository;
+import com.kbaje.eshop.services.repositories.ProductRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +23,33 @@ public class CheckoutService {
     private CartRepository cartRepository;
 
     @Autowired
-    private CartMapper cartMapper;
+    private MapperProfile mapper;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private CartProductRepository cartProductRepository;
 
     public CartDto createCart() {
-        throw new NotImplementedException();
+        AppUser userDetails = userService.getCurrentUser();
+        Cart cart = Cart.create(userDetails);
+
+        return mapper.cartToDto(cartRepository.save(cart));
     }
+
+    public CartDto addProductToCart(UUID cartId, AddProductToCartDto dto) {
+        Cart cart = cartRepository.findById(cartId).get();
+        Product product = productRepository.findById(dto.productId).get();
+        CartProduct cartProduct = new CartProduct(cart, product, dto.quantity);
+        cart.addProduct(cartProduct);
+
+        cartProductRepository.save(cartProduct);
+
+        return mapper.cartToDto(cartRepository.save(cart));
+    }    
 
 }

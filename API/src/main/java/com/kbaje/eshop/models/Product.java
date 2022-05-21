@@ -1,11 +1,18 @@
 package com.kbaje.eshop.models;
 
+import java.util.List;
+
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 
 @Entity
 public final class Product extends BaseEntity {
+    
     private String name;
     private String description;
+
+    @OneToMany(mappedBy = "product")
+    private List<CartProduct> carts;
 
     protected Product() {
         

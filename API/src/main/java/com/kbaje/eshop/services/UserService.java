@@ -7,11 +7,12 @@ import com.kbaje.eshop.dto.AuthDto;
 import com.kbaje.eshop.dto.AuthRequestDto;
 import com.kbaje.eshop.dto.CreateUserDto;
 import com.kbaje.eshop.dto.UserDto;
-import com.kbaje.eshop.mapping.UserMapper;
+import com.kbaje.eshop.mapping.MapperProfile;
 import com.kbaje.eshop.models.AppUser;
 import com.kbaje.eshop.services.repositories.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,19 +29,28 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Autowired
-    private UserMapper userMapper;
+    private MapperProfile mapper;
 
     @Autowired
     private AccessTokenProvider accessTokenProvider;
 
-    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private PasswordEncoder passwordEncoder;
 
-    public UserDetails getCurrent() {
-        return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+    
+    public UserService() {
+        this.passwordEncoder = passwordEncoder();
+    }
+
+    public AppUser getCurrentUser() {
+        return (AppUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     public UserDto getById(UUID id) {
-        return userMapper.mapToDto(userRepository.findById(id).get());
+        return mapper.userToDto(userRepository.findById(id).get());
     }
 
     public AuthDto authenticate(AuthRequestDto authRequest) {
@@ -51,9 +61,6 @@ public class UserService implements UserDetailsService {
         }
 
         if (!passwordEncoder.matches(authRequest.password, user.getPassword())) {
-            System.out.println(user.getPassword());
-            System.out.println(passwordEncoder.encode(authRequest.password));
-            System.out.println(passwordEncoder.encode(authRequest.password));
             return new AuthDto(false, "", "Wrong password");
         }
 
@@ -64,16 +71,16 @@ public class UserService implements UserDetailsService {
     }
 
     public UserDto createUser(CreateUserDto payload) {
-        AppUser user = AppUser.create(payload.username, payload.email, payload.password);
+        AppUser user = AppUser.create(payload.username, payload.email, passwordEncoder.encode(payload.password));
         AppUser createdUser = userRepository.save(user);
 
-        return userMapper.mapToDto(createdUser);
+        return mapper.userToDto(createdUser);
     }
 
     public UserDto getUserByEmail(String email) {
         AppUser user = userRepository.findByEmail(email);
 
-        return userMapper.mapToDto(user);
+        return mapper.userToDto(user);
     }
 
     @Override
