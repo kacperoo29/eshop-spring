@@ -7,6 +7,7 @@ import com.kbaje.eshop.dto.AuthDto;
 import com.kbaje.eshop.dto.AuthRequestDto;
 import com.kbaje.eshop.dto.CreateUserDto;
 import com.kbaje.eshop.dto.UserDto;
+import com.kbaje.eshop.exceptions.UserAlreadyExistsException;
 import com.kbaje.eshop.mapping.MapperProfile;
 import com.kbaje.eshop.models.AppUser;
 import com.kbaje.eshop.services.repositories.UserRepository;
@@ -70,7 +71,24 @@ public class UserService implements UserDetailsService {
                 "Success");
     }
 
+    public UserDto makeUserAdmin(UUID userId) {
+        AppUser user = userRepository.findById(userId).get();
+        user.makeAdmin();
+
+        return mapper.userToDto(userRepository.save(user));
+    }
+
     public UserDto createUser(CreateUserDto payload) {
+        AppUser maybeUser = userRepository.findByEmail(payload.email);
+        if (maybeUser != null) {
+            throw new UserAlreadyExistsException("User with email " + payload.email + " already exists");
+        }
+
+        maybeUser = userRepository.findByUsername(payload.username);
+        if (maybeUser != null) {
+            throw new UserAlreadyExistsException("User with username " + payload.username + " already exists");
+        }
+
         AppUser user = AppUser.create(payload.username, payload.email, passwordEncoder.encode(payload.password));
         AppUser createdUser = userRepository.save(user);
 

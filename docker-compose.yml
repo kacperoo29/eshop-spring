@@ -21,14 +21,12 @@ services:
   client:
     build: ./Client
     ports:
-      - 4000:3000
+      - 3000:3000
     depends_on:
       - api
     volumes:
       - ./Client/eshop/src:/app/src
       - ./Client/eshop/public:/app/public
-      - node_modules:/app/node_modules
 volumes:
   gradle_cache:
   dep_cache:
-  node_modules:

@@ -3,6 +3,7 @@ package com.kbaje.eshop.models;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -13,18 +14,21 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 
+import com.kbaje.eshop.exceptions.InvalidEmailException;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 public class AppUser extends BaseEntity implements UserDetails {
-    
-    @Column(unique = true)
+
+    @Column(unique = true, nullable = false)
     private String username;
-    
-    @Column(unique = true)
+
+    @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String password;
 
     @ElementCollection(targetClass = Authority.class, fetch = FetchType.EAGER)
@@ -53,10 +57,16 @@ public class AppUser extends BaseEntity implements UserDetails {
 
         this.email = email;
         this.password = password;
+        this.username = username;
         this.authorities = new LinkedList<>();
     }
 
     public static AppUser create(String username, String email, String password) {
+
+        if (!Pattern.compile("^[A-z0-9._%+-]+@[A-z0-9.-]+\\.[A-z]{2,6}$").matcher(email).matches()) {
+            throw new InvalidEmailException(email);
+        }
+
         AppUser user = new AppUser(username, email, password);
         user.authorities.add(Authority.USER);
 
@@ -69,7 +79,7 @@ public class AppUser extends BaseEntity implements UserDetails {
     }
 
     @Override
-    public boolean isAccountNonExpired() {        
+    public boolean isAccountNonExpired() {
         return true;
     }
 
@@ -86,6 +96,11 @@ public class AppUser extends BaseEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void makeAdmin() {
+        if (!authorities.contains(Authority.ADMIN))
+            authorities.add(Authority.ADMIN);
     }
 
 }

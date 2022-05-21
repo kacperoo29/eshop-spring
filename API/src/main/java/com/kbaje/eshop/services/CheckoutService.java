@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.kbaje.eshop.dto.AddProductToCartDto;
 import com.kbaje.eshop.dto.CartDto;
+import com.kbaje.eshop.exceptions.IllegalCartStateException;
 import com.kbaje.eshop.mapping.MapperProfile;
 import com.kbaje.eshop.models.AppUser;
 import com.kbaje.eshop.models.Cart;
@@ -36,6 +37,11 @@ public class CheckoutService {
 
     public CartDto createCart() {
         AppUser userDetails = userService.getCurrentUser();
+        Iterable<Cart> carts = cartRepository.getUserCarts(userDetails.getId());
+        if (carts.iterator().hasNext()) {
+            throw new IllegalCartStateException("User already has a cart");
+        }
+        
         Cart cart = Cart.create(userDetails);
 
         return mapper.cartToDto(cartRepository.save(cart));
@@ -50,6 +56,12 @@ public class CheckoutService {
         cartProductRepository.save(cartProduct);
 
         return mapper.cartToDto(cartRepository.save(cart));
+    }
+
+    public Iterable<CartDto> getUserOrders() {
+        AppUser userDetails = userService.getCurrentUser();
+
+        return mapper.cartsToDto(cartRepository.getUserOrders(userDetails.getId()));
     }    
 
 }
