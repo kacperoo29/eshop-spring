@@ -1,14 +1,12 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   AuthDto,
-  AuthenticateRequest,
   AuthRequestDto,
   CreateUserDto,
-  CreateUserRequest,
   UserDto,
 } from "../../api";
 import { RootState } from "../../app/store";
-import { setAccessToken, userApi } from "../apiInstances";
+import { cleanAccessToken, setAccessToken, userApi } from "../apiInstances";
 import Cookies from "universal-cookie";
 
 const cookies = new Cookies();
@@ -48,6 +46,15 @@ export const createUser = createAsyncThunk(
   }
 );
 
+export const getUserDetails = createAsyncThunk(
+  "user/getUserDetails",
+  async () => {
+    const response = await userApi.getUser();
+
+    return response;
+  }
+);
+
 export const userSlice = createSlice({
   name: "user",
   initialState: initialState,
@@ -58,7 +65,8 @@ export const userSlice = createSlice({
         isSucessfull: undefined,
         errorMessage: undefined,
       };
-      setAccessToken("");
+      setAccessToken(undefined);
+      cleanAccessToken();
     },
   },
   extraReducers: {
@@ -87,6 +95,18 @@ export const userSlice = createSlice({
       state.status = "error";
       state.error = action.error.message;
     },
+    // Get user details
+    [getUserDetails.fulfilled.type]: (state, action: PayloadAction<UserDto>) => {
+      state.user = action.payload;
+      state.status = "idle";
+    },
+    [getUserDetails.pending.type]: (state) => {
+      state.status = "loading";
+    },
+    [getUserDetails.rejected.type]: (state, action) => {
+      state.status = "error";
+      state.error = action.error.message;
+    }
   },
 });
 

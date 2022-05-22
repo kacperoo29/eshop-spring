@@ -37,6 +37,12 @@ export interface UserDto {
      * @memberof UserDto
      */
     email?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserDto
+     */
+    role?: string;
 }
 
 export function UserDtoFromJSON(json: any): UserDto {
@@ -52,6 +58,7 @@ export function UserDtoFromJSONTyped(json: any, ignoreDiscriminator: boolean): U
         'id': !exists(json, 'id') ? undefined : json['id'],
         'username': !exists(json, 'username') ? undefined : json['username'],
         'email': !exists(json, 'email') ? undefined : json['email'],
+        'role': !exists(json, 'role') ? undefined : json['role'],
     };
 }
 
@@ -67,6 +74,7 @@ export function UserDtoToJSON(value?: UserDto | null): any {
         'id': value.id,
         'username': value.username,
         'email': value.email,
+        'role': value.role,
     };
 }
 

@@ -1,4 +1,3 @@
-.openapi-generator-ignore
 apis/CheckoutApi.ts
 apis/ProductsApi.ts
 apis/UsersApi.ts

@@ -41,9 +41,14 @@ export const Navbar = () => {
 
         <div className="navbar-nav ml-auto">
           {isAuthenticated ? (
-            <Link className="nav-link" to={`/logout`}>
-              Logout
-            </Link>
+            <>
+              <Link className="nav-link" to={`/logout`}>
+                Logout
+              </Link>
+              <Link className="nav-link" to={`/checkout`}>
+                <i className="bi bi-cart4"></i>
+              </Link>
+            </>
           ) : (
             <>
               <Link className="nav-link" to={`/login`}>
@@ -51,9 +56,6 @@ export const Navbar = () => {
               </Link>
               <Link className="nav-link" to={`/register`}>
                 Register
-              </Link>
-              <Link className="nav-link" to={`/checkout`}>
-                <i className="bi bi-cart4"></i>
               </Link>
             </>
           )}

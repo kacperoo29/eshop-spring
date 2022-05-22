@@ -24,7 +24,6 @@ import {
 } from '../models';
 
 export interface AddProductToCartRequest {
-    cartId: string;
     addProductToCartDto: AddProductToCartDto;
 }
 
@@ -38,10 +37,6 @@ export class CheckoutApi extends runtime.BaseAPI {
      * Add product to cart
      */
     async addProductToCartRaw(requestParameters: AddProductToCartRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<CartDto>> {
-        if (requestParameters.cartId === null || requestParameters.cartId === undefined) {
-            throw new runtime.RequiredError('cartId','Required parameter requestParameters.cartId was null or undefined when calling addProductToCart.');
-        }
-
         if (requestParameters.addProductToCartDto === null || requestParameters.addProductToCartDto === undefined) {
             throw new runtime.RequiredError('addProductToCartDto','Required parameter requestParameters.addProductToCartDto was null or undefined when calling addProductToCart.');
         }
@@ -61,7 +56,7 @@ export class CheckoutApi extends runtime.BaseAPI {
             }
         }
         const response = await this.request({
-            path: `/api/checkout/addProductToCart/{cartId}`.replace(`{${"cartId"}}`, encodeURIComponent(String(requestParameters.cartId))),
+            path: `/api/checkout/addProductToCart`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -113,6 +108,42 @@ export class CheckoutApi extends runtime.BaseAPI {
      */
     async createCart(initOverrides?: RequestInit): Promise<CartDto> {
         const response = await this.createCartRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get cart
+     * Get cart
+     */
+    async getCartRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<CartDto>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/checkout/getCart`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CartDtoFromJSON(jsonValue));
+    }
+
+    /**
+     * Get cart
+     * Get cart
+     */
+    async getCart(initOverrides?: RequestInit): Promise<CartDto> {
+        const response = await this.getCartRaw(initOverrides);
         return await response.value();
     }
 

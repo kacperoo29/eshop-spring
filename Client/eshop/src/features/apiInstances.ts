@@ -9,6 +9,11 @@ export const setAccessToken = (token: string | undefined) => {
   accessToken = token;
 }
 
+export const cleanAccessToken = () => {
+  cookies.remove("accessToken", { path: "/" });
+  accessToken = undefined;
+}
+
 export const productApi = new ProductsApi(
   new Configuration({ accessToken: () => accessToken ?? "" })
 );

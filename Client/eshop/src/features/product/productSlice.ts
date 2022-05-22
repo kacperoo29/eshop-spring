@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ProductDto } from "../../api";
+import { CreateProductDto, ProductDto } from "../../api";
 import { RootState } from "../../app/store";
 import { productApi } from "../apiInstances";
 
@@ -23,6 +23,15 @@ export const fetchProducts = createAsyncThunk(
   "product/fetchProducts",
   async () => {
     const response = await productApi.get();
+
+    return response;
+  }
+);
+
+export const createProduct = createAsyncThunk(
+  "product/createProduct",
+  async (payload: CreateProductDto) => {
+    const response = await productApi.create({ createProductDto: payload });
 
     return response;
   }
@@ -66,6 +75,21 @@ export const productSlice = createSlice({
     [fetchProducts.rejected.type]: (state, action) => {
       state.status = "failed";
       state.error = action.payload.message;
+    },
+    // Create product
+    [createProduct.fulfilled.type]: (
+      state,
+      action: PayloadAction<ProductDto>
+    ) => {
+      state.product = action.payload;
+      state.status = "idle";
+    },
+    [createProduct.pending.type]: (state) => {
+      state.status = "loading";
+    },
+    [createProduct.rejected.type]: (state, action) => {
+      state.status = "failed";
+      state.error = action.error.message;
     },
   },
 });

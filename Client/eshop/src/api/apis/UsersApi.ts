@@ -112,4 +112,40 @@ export class UsersApi extends runtime.BaseAPI {
         return await response.value();
     }
 
+    /**
+     * Get user
+     * Get user
+     */
+    async getUserRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<UserDto>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/user/getUser`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserDtoFromJSON(jsonValue));
+    }
+
+    /**
+     * Get user
+     * Get user
+     */
+    async getUser(initOverrides?: RequestInit): Promise<UserDto> {
+        const response = await this.getUserRaw(initOverrides);
+        return await response.value();
+    }
+
 }

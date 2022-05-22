@@ -1,6 +1,12 @@
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { addToCart } from "../checkout/checkoutSlice";
+import {
+  getUserDetails,
+  selectIsLoggedIn,
+  selectUser,
+} from "../user/userSlice";
 import {
   fetchProducts,
   selectError,
@@ -13,16 +19,23 @@ export const ProductList = () => {
   const products = useAppSelector(selectProducts);
   const loading = useAppSelector(selectLoading);
   const error = useAppSelector(selectError);
+  const user = useAppSelector(selectUser);
+  const isAuthenticated = useAppSelector(selectIsLoggedIn);
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(fetchProducts());
-  }, [dispatch]);
+    if (isAuthenticated) dispatch(getUserDetails());
+  }, [dispatch, isAuthenticated]);
 
   return (
     <div>
       <h1>Products</h1>
       {loading && <p>Loading...</p>}
       {error && <p>Error :(</p>}
+      {isAuthenticated && user?.role?.toLowerCase() === "admin" && (
+        <button className="btn btn-primary" onClick={() => navigate(`/products/add`)}>Add new product</button>
+      )}
       {products.map((product) => (
         <div key={product.id} className="row product">
           <Link to={`/products/${product.id}`} className="col-md-2">
@@ -33,16 +46,26 @@ export const ProductList = () => {
             />
           </Link>
           <div className="col-md-6 product-detail">
-          <Link className="text-decoration-none link-dark underline-on-hover" to={`/products/${product.id}`}><h4>{product.name}</h4></Link>
+            <Link
+              className="text-decoration-none link-dark underline-on-hover"
+              to={`/products/${product.id}`}
+            >
+              <h4>{product.name}</h4>
+            </Link>
             <p>{product.description}</p>
           </div>
           <div className="col-md-2 product-price">
             <span>${product.price}</span>
           </div>
           <div className="col-md-2">
-            <Link to={`/products`} className="btn btn-primary">
+            <button
+              className="btn btn-primary"
+              onClick={() =>
+                dispatch(addToCart({ productId: product.id, quantity: 1 }))
+              }
+            >
               Add to cart
-            </Link>
+            </button>
           </div>
         </div>
       ))}

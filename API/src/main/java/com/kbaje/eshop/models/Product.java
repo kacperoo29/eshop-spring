@@ -21,11 +21,13 @@ public final class Product extends BaseEntity {
         
     }
 
-    protected Product(String name, String description) {
+    protected Product(String name, String description, BigDecimal price, String imageUrl) {
         super();
 
         this.name = name;
         this.description = description;
+        this.price = price;
+        this.imageUrl = imageUrl;
     }
 
     public String getName() {
@@ -44,8 +46,8 @@ public final class Product extends BaseEntity {
         return price;
     }
 
-    public static Product create(String name, String description) {
-        return new Product(name, description);
+    public static Product create(String name, String description, BigDecimal price, String imageUrl) {
+        return new Product(name, description, price, imageUrl);
     }
 
     public void editName(String name) {

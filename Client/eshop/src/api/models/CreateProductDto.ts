@@ -31,6 +31,18 @@ export interface CreateProductDto {
      * @memberof CreateProductDto
      */
     description?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateProductDto
+     */
+    imageUrl?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof CreateProductDto
+     */
+    price?: number;
 }
 
 export function CreateProductDtoFromJSON(json: any): CreateProductDto {
@@ -45,6 +57,8 @@ export function CreateProductDtoFromJSONTyped(json: any, ignoreDiscriminator: bo
         
         'name': !exists(json, 'name') ? undefined : json['name'],
         'description': !exists(json, 'description') ? undefined : json['description'],
+        'imageUrl': !exists(json, 'imageUrl') ? undefined : json['imageUrl'],
+        'price': !exists(json, 'price') ? undefined : json['price'],
     };
 }
 
@@ -59,6 +73,8 @@ export function CreateProductDtoToJSON(value?: CreateProductDto | null): any {
         
         'name': value.name,
         'description': value.description,
+        'imageUrl': value.imageUrl,
+        'price': value.price,
     };
 }
 

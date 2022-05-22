@@ -110,4 +110,8 @@ public class UserService implements UserDetailsService {
 
         return user;
     }
+
+    public UserDto getCurrentUserDto() {
+        return mapper.userToDto(getCurrentUser());
+    }
 }

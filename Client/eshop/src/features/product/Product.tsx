@@ -17,12 +17,12 @@ export const Product = () => {
     <div>
       <div className="row">
         <div className="col-md-6">
-          <img src={product.imageUrl} alt={product.name} />
+          <img className="img-fluid" src={product.imageUrl} alt={product.name} />
         </div>
         <div className="col-md-6">
           <h1>{product.name}</h1>
           <p>{product.description}</p>
-          <p>{product.price}</p>
+          <p>Price: ${product.price}</p>
         </div>
       </div>
     </div>

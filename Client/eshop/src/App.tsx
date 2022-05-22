@@ -9,6 +9,9 @@ import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import { Navbar } from "./Navbar";
 import { Login } from "./features/user/Login";
 import { Register } from "./features/user/Register";
+import { Checkout } from "./features/checkout/Checkout";
+import { ProductAdd } from "./features/product/ProductAdd";
+import { Logout } from "./features/user/Logout";
 
 function App() {
   return (
@@ -21,7 +24,10 @@ function App() {
             <Route path="/products" element={<ProductList />} />
             <Route path="/products/:id" element={<Product />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/logout" element={<Logout />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/products/add" element={<ProductAdd />} />
           </Routes>
         </div>
       </BrowserRouter>
