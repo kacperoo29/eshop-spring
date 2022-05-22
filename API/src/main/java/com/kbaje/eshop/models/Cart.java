@@ -49,7 +49,7 @@ public class Cart extends BaseEntity {
         return new Cart(user);
     }
 
-    public void order() {
+    public void postOrder() {
         this.state = CartState.ORDERED;
     }
 

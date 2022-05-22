@@ -3,15 +3,27 @@ package com.kbaje.eshop.models;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.Size;
 
 @Entity
 public final class Product extends BaseEntity {
     
+    @Column(length = 100)
+    @Size(min = 1, max = 100)
     private String name;
+
+    @Column(length = 1000)
+    @Size(min = 5, max = 1000)
     private String description;
+
+    @Column(length = 1000)
+    @Size(min = 5, max = 1000)
     private String imageUrl;
+
+    @Column(scale = 2)
     private BigDecimal price;
 
     @OneToMany(mappedBy = "product")
@@ -56,6 +68,14 @@ public final class Product extends BaseEntity {
 
     public void editDescription(String description) {
         this.description = description;
+    }
+
+    public void editPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public void editImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
 }

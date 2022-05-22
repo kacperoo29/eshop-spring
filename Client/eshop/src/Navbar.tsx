@@ -36,6 +36,13 @@ export const Navbar = () => {
                 Products
               </Link>
             </li>
+            {isAuthenticated && (
+              <li className="nav-item">
+                <Link className="nav-link" to={`/orders`}>
+                  Orders
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
 

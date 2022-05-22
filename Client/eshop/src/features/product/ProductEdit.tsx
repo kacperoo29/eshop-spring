@@ -1,33 +1,44 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../../app/hooks";
-import { createProduct } from "./productSlice";
+import React, { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { editProduct, fetchProduct, selectProduct } from "./productSlice";
 
-export const ProductAdd = () => {
+export const ProductEdit = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { id } = useParams();
+  const product = useAppSelector(selectProduct);
 
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
   const [price, setPrice] = React.useState(0);
   const [imageUrl, setImageUrl] = React.useState("");
 
+  useEffect(() => {
+    dispatch(fetchProduct(id!)).then(() => {
+      setName(product.name!);
+      setDescription(product.description!);
+      setPrice(product.price!);
+      setImageUrl(product.imageUrl!);
+    });
+  }, [dispatch, id]);
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     dispatch(
-      createProduct({
-        name: name,
-        description: description,
-        price: price,
-        imageUrl: imageUrl,
+      editProduct({
+        productId: id!,
+        payload: { name, description, price, imageUrl },
       })
-    ).then(() => navigate("/products"));
+    ).then((r) => {
+      navigate(`/products/${id}`);
+    });
   };
 
   return (
     <div>
-      <h1>Add Product</h1>
+      <h1>Edit Product</h1>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="name">Name</label>
@@ -37,6 +48,7 @@ export const ProductAdd = () => {
             id="name"
             className="form-control"
             required
+            value={name}
             onChange={(event) => setName(event.target.value)}
           />
         </div>
@@ -48,6 +60,7 @@ export const ProductAdd = () => {
             id="description"
             className="form-control"
             required
+            value={description}
             onChange={(event) => setDescription(event.target.value)}
           />
         </div>
@@ -61,6 +74,7 @@ export const ProductAdd = () => {
             step=".01"
             min="0"
             required
+            value={price}
             onChange={(e) => setPrice(e.target.valueAsNumber)}
           />
         </div>
@@ -72,11 +86,12 @@ export const ProductAdd = () => {
             id="imageUrl"
             className="form-control"
             required
+            value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
           />
         </div>
         <button type="submit" className="btn btn-primary">
-          Add Product
+          Edit Product
         </button>
       </form>
     </div>

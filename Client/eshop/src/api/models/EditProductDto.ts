@@ -31,6 +31,18 @@ export interface EditProductDto {
      * @memberof EditProductDto
      */
     description?: string;
+    /**
+     * 
+     * @type {number}
+     * @memberof EditProductDto
+     */
+    price?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof EditProductDto
+     */
+    imageUrl?: string;
 }
 
 export function EditProductDtoFromJSON(json: any): EditProductDto {
@@ -45,6 +57,8 @@ export function EditProductDtoFromJSONTyped(json: any, ignoreDiscriminator: bool
         
         'name': !exists(json, 'name') ? undefined : json['name'],
         'description': !exists(json, 'description') ? undefined : json['description'],
+        'price': !exists(json, 'price') ? undefined : json['price'],
+        'imageUrl': !exists(json, 'imageUrl') ? undefined : json['imageUrl'],
     };
 }
 
@@ -59,6 +73,8 @@ export function EditProductDtoToJSON(value?: EditProductDto | null): any {
         
         'name': value.name,
         'description': value.description,
+        'price': value.price,
+        'imageUrl': value.imageUrl,
     };
 }
 

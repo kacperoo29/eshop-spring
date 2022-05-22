@@ -183,4 +183,40 @@ export class CheckoutApi extends runtime.BaseAPI {
         return await response.value();
     }
 
+    /**
+     * Post order
+     * Post order
+     */
+    async postOrderRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<CartDto>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/checkout/postOrder`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CartDtoFromJSON(jsonValue));
+    }
+
+    /**
+     * Post order
+     * Post order
+     */
+    async postOrder(initOverrides?: RequestInit): Promise<CartDto> {
+        const response = await this.postOrderRaw(initOverrides);
+        return await response.value();
+    }
+
 }

@@ -3,15 +3,17 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Product } from "./features/product/Product";
 import { ProductList } from "./features/product/ProductList";
 import { Home } from "./Home";
-
-import "./App.css";
-import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import { Navbar } from "./Navbar";
 import { Login } from "./features/user/Login";
 import { Register } from "./features/user/Register";
 import { Checkout } from "./features/checkout/Checkout";
 import { ProductAdd } from "./features/product/ProductAdd";
 import { Logout } from "./features/user/Logout";
+import { Orders } from "./features/checkout/Orders";
+
+import "./App.css";
+import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import { ProductEdit } from "./features/product/ProductEdit";
 
 function App() {
   return (
@@ -23,11 +25,13 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<ProductList />} />
             <Route path="/products/:id" element={<Product />} />
+            <Route path="/products/add" element={<ProductAdd />} />
+            <Route path="/products/edit/:id" element={<ProductEdit />} />
             <Route path="/login" element={<Login />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/register" element={<Register />} />
             <Route path="/checkout" element={<Checkout />} />
-            <Route path="/products/add" element={<ProductAdd />} />
+            <Route path="/orders" element={<Orders />} />
           </Routes>
         </div>
       </BrowserRouter>

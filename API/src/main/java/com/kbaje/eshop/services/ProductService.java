@@ -45,6 +45,8 @@ public class ProductService {
 
         entity.editName(payload.name);
         entity.editDescription(payload.description);
+        entity.editImageUrl(payload.imageUrl);
+        entity.editPrice(payload.price);
 
         Product product = repository.save(entity);
 

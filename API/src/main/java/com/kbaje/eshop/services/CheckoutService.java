@@ -81,4 +81,11 @@ public class CheckoutService {
 
         return cart;
     }
+
+    public CartDto postOrder() {
+        Cart cart = getUserCartImpl();
+        cart.postOrder();
+
+        return mapper.cartToDto(cartRepository.save(cart));
+    }
 }

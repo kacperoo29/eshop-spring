@@ -50,4 +50,10 @@ public class CheckoutController {
     public CartDto getCart() {
         return checkoutService.getUserCart();
     }
+
+    @Operation(summary = "Post order", description = "Post order", security = @SecurityRequirement(name = "bearerAuth"))
+    @PostMapping("postOrder")
+    public CartDto postOrder() {
+        return checkoutService.postOrder();
+    }
 }

@@ -7,12 +7,14 @@ export interface CheckoutState {
   cart: CartDto | null;
   status: "idle" | "loading" | "error";
   error: string | null;
+  orders: CartDto[] | null;
 }
 
 export const initialState: CheckoutState = {
   cart: null,
   status: "idle",
   error: null,
+  orders: null,
 };
 
 export const getCart = createAsyncThunk("checkout/getCart", async () => {
@@ -28,6 +30,21 @@ export const addToCart = createAsyncThunk(
       addProductToCartDto: payload,
     });
 
+    return response;
+  }
+);
+
+export const getOrders = createAsyncThunk("checkout/getOrders", async () => {
+  const response = await checkoutApi.getUserOrders();
+
+  return response;
+});
+
+export const postOrder = createAsyncThunk(
+  "checkout/postOrder",
+  async () => {
+    const response = await checkoutApi.postOrder();
+    
     return response;
   }
 );
@@ -61,11 +78,35 @@ export const checkoutSlice = createSlice({
     [addToCart.pending.type]: (state) => {
       state.status = "loading";
     },
+    // Get orders
+    [getOrders.fulfilled.type]: (state, action) => {
+      state.orders = action.payload;
+      state.status = "idle";
+    },
+    [getOrders.rejected.type]: (state, action) => {
+      state.status = "error";
+      state.error = action.error.message;
+    },
+    [getOrders.pending.type]: (state) => {
+      state.status = "loading";
+    },
+    // Post order
+    [postOrder.fulfilled.type]: (state, action) => {
+      state.status = "idle";
+    },
+    [postOrder.rejected.type]: (state, action) => {
+      state.status = "error";
+      state.error = action.error.message;
+    },
+    [postOrder.pending.type]: (state) => {
+      state.status = "loading";
+    }
   },
 });
 
 export const selectCart = (state: RootState) => state.checkout.cart;
 export const selectCheckoutStatus = (state: RootState) => state.checkout.status;
 export const selectError = (state: RootState) => state.checkout.error;
+export const selectOrders = (state: RootState) => state.checkout.orders;
 
 export default checkoutSlice.reducer;
