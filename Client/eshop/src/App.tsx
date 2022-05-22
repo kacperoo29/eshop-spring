@@ -7,6 +7,8 @@ import { Home } from "./Home";
 import "./App.css";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import { Navbar } from "./Navbar";
+import { Login } from "./features/user/Login";
+import { Register } from "./features/user/Register";
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<ProductList />} />
             <Route path="/products/:id" element={<Product />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </div>
       </BrowserRouter>

@@ -1,7 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useAppSelector } from "./app/hooks";
+import { selectIsLoggedIn } from "./features/user/userSlice";
 
 export const Navbar = () => {
+  const isAuthenticated = useAppSelector(selectIsLoggedIn);
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container">
@@ -33,6 +37,26 @@ export const Navbar = () => {
               </Link>
             </li>
           </ul>
+        </div>
+
+        <div className="navbar-nav ml-auto">
+          {isAuthenticated ? (
+            <Link className="nav-link" to={`/logout`}>
+              Logout
+            </Link>
+          ) : (
+            <>
+              <Link className="nav-link" to={`/login`}>
+                Login
+              </Link>
+              <Link className="nav-link" to={`/register`}>
+                Register
+              </Link>
+              <Link className="nav-link" to={`/checkout`}>
+                <i className="bi bi-cart4"></i>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>
