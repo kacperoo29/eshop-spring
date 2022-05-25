@@ -30,7 +30,7 @@ export const ProductList = () => {
     dispatch(fetchProducts()).then((r) => {
       if (r.meta.requestStatus === "fulfilled") {
         (r.payload as ProductDto[]).forEach((p) => {
-          setQuantity({ ...quantity, [p.id!]: 1 });
+          setQuantity(q => ({ ...q, [p.id!]: 1 }));
         });
       }
     });

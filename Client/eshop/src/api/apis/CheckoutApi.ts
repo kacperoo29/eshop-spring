@@ -21,10 +21,21 @@ import {
     CartDto,
     CartDtoFromJSON,
     CartDtoToJSON,
+    ChangeQuantityDto,
+    ChangeQuantityDtoFromJSON,
+    ChangeQuantityDtoToJSON,
 } from '../models';
 
 export interface AddProductToCartRequest {
     addProductToCartDto: AddProductToCartDto;
+}
+
+export interface ChangeQuantityRequest {
+    changeQuantityDto: ChangeQuantityDto;
+}
+
+export interface RemoveProductFromCartRequest {
+    productId: string;
 }
 
 /**
@@ -72,6 +83,49 @@ export class CheckoutApi extends runtime.BaseAPI {
      */
     async addProductToCart(requestParameters: AddProductToCartRequest, initOverrides?: RequestInit): Promise<CartDto> {
         const response = await this.addProductToCartRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Change quantity
+     * Change quantity
+     */
+    async changeQuantityRaw(requestParameters: ChangeQuantityRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<CartDto>> {
+        if (requestParameters.changeQuantityDto === null || requestParameters.changeQuantityDto === undefined) {
+            throw new runtime.RequiredError('changeQuantityDto','Required parameter requestParameters.changeQuantityDto was null or undefined when calling changeQuantity.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/checkout/changeQuantity`,
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ChangeQuantityDtoToJSON(requestParameters.changeQuantityDto),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CartDtoFromJSON(jsonValue));
+    }
+
+    /**
+     * Change quantity
+     * Change quantity
+     */
+    async changeQuantity(requestParameters: ChangeQuantityRequest, initOverrides?: RequestInit): Promise<CartDto> {
+        const response = await this.changeQuantityRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
@@ -216,6 +270,46 @@ export class CheckoutApi extends runtime.BaseAPI {
      */
     async postOrder(initOverrides?: RequestInit): Promise<CartDto> {
         const response = await this.postOrderRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Remove product form cart
+     * Remove product from cart
+     */
+    async removeProductFromCartRaw(requestParameters: RemoveProductFromCartRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<CartDto>> {
+        if (requestParameters.productId === null || requestParameters.productId === undefined) {
+            throw new runtime.RequiredError('productId','Required parameter requestParameters.productId was null or undefined when calling removeProductFromCart.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("bearerAuth", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/checkout/removeProductFromCart/{productId}`.replace(`{${"productId"}}`, encodeURIComponent(String(requestParameters.productId))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CartDtoFromJSON(jsonValue));
+    }
+
+    /**
+     * Remove product form cart
+     * Remove product from cart
+     */
+    async removeProductFromCart(requestParameters: RemoveProductFromCartRequest, initOverrides?: RequestInit): Promise<CartDto> {
+        const response = await this.removeProductFromCartRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

@@ -1,7 +1,9 @@
 package com.kbaje.eshop.models;
 
+import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -23,11 +25,11 @@ public class Cart extends BaseEntity {
     private CartState state;
 
     @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(mappedBy = "cart")
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
     private List<CartProduct> products;
 
     protected Cart() {
-
+        this.products = new LinkedList<>();
     }
 
     protected Cart(AppUser user) {
@@ -35,6 +37,11 @@ public class Cart extends BaseEntity {
 
         this.user = user;
         this.state = CartState.NEW;
+        this.products = new LinkedList<>();
+    }
+
+    public static Cart create(AppUser user) {
+        return new Cart(user);
     }
 
     public List<CartProduct> getProducts() {
@@ -45,11 +52,15 @@ public class Cart extends BaseEntity {
         return state;
     }
 
-    public static Cart create(AppUser user) {
-        return new Cart(user);
-    }
-
     public void postOrder() {
+        if (state != CartState.NEW) {
+            throw new IllegalCartStateException("Cannot post order from cart with state " + state);
+        }
+
+        if (products.isEmpty()) {
+            throw new IllegalCartStateException("Cannot post order from cart with no products");
+        }
+
         this.state = CartState.ORDERED;
     }
 
@@ -60,9 +71,42 @@ public class Cart extends BaseEntity {
 
         if (this.products.stream().filter(p -> p.getProduct().getId().equals(product.getProduct().getId()))
                 .count() > 0) {
-            throw new IllegalCartStateException(String.format("Product '%s' already in cart", product.getProduct().getName()));
+            throw new IllegalCartStateException(
+                    String.format("Product '%s' already in cart", product.getProduct().getName()));
         }
 
         products.add(product);
+    }
+
+    public void changeQuantity(Product product, int quantity) {
+        if (this.state != CartState.NEW) {
+            throw new IllegalCartStateException("Cannot change quantity of cart in state " + this.state);
+        }
+
+        CartProduct cartProduct = this.products.stream().filter(p -> p.getProduct().getId().equals(product.getId()))
+                .findFirst().orElse(null);
+
+        if (cartProduct == null) {
+            throw new IllegalCartStateException(
+                    String.format("Product '%s' not in cart", product.getName()));
+        }
+
+        cartProduct.setQuantity(quantity);
+    }
+
+    public void removeProduct(Product product) {
+        if (this.state != CartState.NEW) {
+            throw new IllegalCartStateException("Cannot remove product from cart in state " + this.state);
+        }
+
+        CartProduct cartProduct = this.products.stream().filter(p -> p.getProduct().getId().equals(product.getId()))
+                .findFirst().orElse(null);
+
+        if (cartProduct == null) {
+            throw new IllegalCartStateException(
+                    String.format("Product '%s' not in cart", product.getName()));
+        }
+
+        this.products.remove(cartProduct);
     }
 }

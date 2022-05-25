@@ -8,6 +8,9 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Size;
 
+import com.kbaje.eshop.exceptions.EmptyFieldException;
+import com.kbaje.eshop.exceptions.InvalidPriceException;
+
 @Entity
 public final class Product extends BaseEntity {
     
@@ -42,6 +45,22 @@ public final class Product extends BaseEntity {
         this.imageUrl = imageUrl;
     }
 
+    public static Product create(String name, String description, BigDecimal price, String imageUrl) {
+        if (name.isEmpty()) {
+            throw new EmptyFieldException(Product.class, "name");
+        }
+
+        if (description.isEmpty()) {
+            throw new EmptyFieldException(Product.class, "description");
+        }
+
+        if (price.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new InvalidPriceException(price);
+        }
+
+        return new Product(name, description, price, imageUrl);
+    }
+
     public String getName() {
         return name;
     }
@@ -58,19 +77,27 @@ public final class Product extends BaseEntity {
         return price;
     }
 
-    public static Product create(String name, String description, BigDecimal price, String imageUrl) {
-        return new Product(name, description, price, imageUrl);
-    }
-
     public void editName(String name) {
+        if (name.isEmpty()) {
+            throw new EmptyFieldException(Product.class, "name");
+        }
+
         this.name = name;
     }
 
     public void editDescription(String description) {
+        if (description.isEmpty()) {
+            throw new EmptyFieldException(Product.class, "description");
+        }
+
         this.description = description;
     }
 
     public void editPrice(BigDecimal price) {
+        if (price.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new InvalidPriceException(price);
+        }
+
         this.price = price;
     }
 

@@ -1,13 +1,19 @@
 package com.kbaje.eshop.controllers;
 
+import java.util.UUID;
+
 import com.kbaje.eshop.dto.AddProductToCartDto;
+import com.kbaje.eshop.dto.ChangeQuantityDto;
 import com.kbaje.eshop.dto.CartDto;
 import com.kbaje.eshop.services.CheckoutService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,5 +61,17 @@ public class CheckoutController {
     @PostMapping("postOrder")
     public CartDto postOrder() {
         return checkoutService.postOrder();
+    }
+
+    @Operation(summary = "Change quantity", description = "Change quantity", security = @SecurityRequirement(name = "bearerAuth"))
+    @PutMapping("changeQuantity")
+    public CartDto changeQuantity(@RequestBody ChangeQuantityDto payload) {
+        return checkoutService.changeQuantity(payload);
+    }
+
+    @Operation(summary = "Remove product from cart", description = "Remove product form cart", security = @SecurityRequirement(name = "bearerAuth"))
+    @DeleteMapping("removeProductFromCart/{productId}")
+    public CartDto removeProductFromCart(@PathVariable UUID productId) {
+        return checkoutService.removeProductFromCart(productId);
     }
 }

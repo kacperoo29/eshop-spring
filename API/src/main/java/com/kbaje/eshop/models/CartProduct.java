@@ -33,6 +33,12 @@ public class CartProduct {
     }
 
     public CartProduct(Cart cart, Product product, int quantity) {
+        this();
+        
+        if (quantity < 1) {
+            throw new IllegalArgumentException("Quantity must be greater than 0");
+        }
+
         this.cart = cart;
         this.product = product;
         this.quantity = quantity;
@@ -48,5 +54,13 @@ public class CartProduct {
 
     public Cart getCart() {
         return cart;
+    }
+
+    public void setQuantity(int quantity) {
+        if (quantity < 1) {
+            throw new IllegalArgumentException("Quantity must be greater than 0");
+        }
+
+        this.quantity = quantity;
     }
 }

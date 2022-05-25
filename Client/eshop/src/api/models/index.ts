@@ -5,6 +5,7 @@ export * from './AuthDto';
 export * from './AuthRequestDto';
 export * from './CartDto';
 export * from './CartProductDto';
+export * from './ChangeQuantityDto';
 export * from './CreateProductDto';
 export * from './CreateUserDto';
 export * from './EditProductDto';

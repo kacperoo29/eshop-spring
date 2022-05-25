@@ -16,7 +16,7 @@ import io.jsonwebtoken.Jwts;
 @Service
 public class JwtTokenProvider implements AccessTokenProvider {
 
-    private final String SECRET_KEY = "d3yQ_W?eQ^AL$y6q";
+    public static final String SECRET_KEY = "d3yQ_W?eQ^AL$y6q";
 
     private UserRepository userRepository;
 

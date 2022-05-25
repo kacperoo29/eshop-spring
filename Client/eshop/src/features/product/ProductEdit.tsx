@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { editProduct, fetchProduct, selectProduct } from "./productSlice";
+import { ProductDto } from "../../api";
+import { useAppDispatch } from "../../app/hooks";
+import { editProduct, fetchProduct } from "./productSlice";
 
 export const ProductEdit = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
-  const product = useAppSelector(selectProduct);
 
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
@@ -15,11 +15,13 @@ export const ProductEdit = () => {
   const [imageUrl, setImageUrl] = React.useState("");
 
   useEffect(() => {
-    dispatch(fetchProduct(id!)).then(() => {
-      setName(product.name!);
-      setDescription(product.description!);
-      setPrice(product.price!);
-      setImageUrl(product.imageUrl!);
+    dispatch(fetchProduct(id!)).then((r) => {
+      if (r.meta.requestStatus !== "fulfilled")
+        return;
+      setName((r.payload as ProductDto).name!);
+      setDescription((r.payload as ProductDto).description!);
+      setPrice((r.payload as ProductDto).price!);
+      setImageUrl((r.payload as ProductDto).imageUrl!);
     });
   }, [dispatch, id]);
 

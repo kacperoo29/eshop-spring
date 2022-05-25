@@ -14,6 +14,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 
+import com.kbaje.eshop.exceptions.EmptyFieldException;
 import com.kbaje.eshop.exceptions.InvalidEmailException;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -36,18 +37,6 @@ public class AppUser extends BaseEntity implements UserDetails {
     @CollectionTable(name = "user_authorities", joinColumns = @JoinColumn(name = "user_id"))
     private List<Authority> authorities;
 
-    public String getUsername() {
-        return username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
     protected AppUser() {
 
     }
@@ -63,6 +52,18 @@ public class AppUser extends BaseEntity implements UserDetails {
 
     public static AppUser create(String username, String email, String password) {
 
+        if (email.isEmpty()) {
+            throw new EmptyFieldException(AppUser.class, "email");
+        }
+
+        if (username.isEmpty()) {
+            throw new EmptyFieldException(AppUser.class, "username");
+        }
+
+        if (password.isEmpty()) {
+            throw new EmptyFieldException(AppUser.class, "password");
+        }
+
         if (!Pattern.compile("^[A-z0-9._%+-]+@[A-z0-9.-]+\\.[A-z]{2,6}$").matcher(email).matches()) {
             throw new InvalidEmailException(email);
         }
@@ -71,6 +72,18 @@ public class AppUser extends BaseEntity implements UserDetails {
         user.authorities.add(Authority.USER);
 
         return user;
+    }
+    
+    public String getUsername() {
+        return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     @Override

@@ -8,6 +8,7 @@ models/AuthDto.ts
 models/AuthRequestDto.ts
 models/CartDto.ts
 models/CartProductDto.ts
+models/ChangeQuantityDto.ts
 models/CreateProductDto.ts
 models/CreateUserDto.ts
 models/EditProductDto.ts

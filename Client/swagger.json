@@ -73,6 +73,43 @@
                 ]
             }
         },
+        "/api/checkout/changeQuantity": {
+            "put": {
+                "tags": [
+                    "Checkout"
+                ],
+                "summary": "Change quantity",
+                "description": "Change quantity",
+                "operationId": "changeQuantity",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangeQuantityDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CartDto"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/user/createUser": {
             "post": {
                 "tags": [
@@ -431,6 +468,44 @@
                     }
                 ]
             }
+        },
+        "/api/checkout/removeProductFromCart/{productId}": {
+            "delete": {
+                "tags": [
+                    "Checkout"
+                ],
+                "summary": "Remove product from cart",
+                "description": "Remove product form cart",
+                "operationId": "removeProductFromCart",
+                "parameters": [
+                    {
+                        "name": "productId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "*/*": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CartDto"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -470,6 +545,53 @@
                     },
                     "price": {
                         "type": "number"
+                    }
+                }
+            },
+            "ChangeQuantityDto": {
+                "type": "object",
+                "properties": {
+                    "productId": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "CartDto": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "products": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CartProductDto"
+                        }
+                    },
+                    "state": {
+                        "type": "string",
+                        "enum": [
+                            "NEW",
+                            "ORDERED"
+                        ]
+                    }
+                }
+            },
+            "CartProductDto": {
+                "type": "object",
+                "properties": {
+                    "product": {
+                        "$ref": "#/components/schemas/ProductDto"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "format": "int32"
                     }
                 }
             },
@@ -544,40 +666,6 @@
                     },
                     "price": {
                         "type": "number"
-                    }
-                }
-            },
-            "CartDto": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "format": "uuid"
-                    },
-                    "products": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/CartProductDto"
-                        }
-                    },
-                    "state": {
-                        "type": "string",
-                        "enum": [
-                            "NEW",
-                            "ORDERED"
-                        ]
-                    }
-                }
-            },
-            "CartProductDto": {
-                "type": "object",
-                "properties": {
-                    "product": {
-                        "$ref": "#/components/schemas/ProductDto"
-                    },
-                    "quantity": {
-                        "type": "integer",
-                        "format": "int32"
                     }
                 }
             },

@@ -1,7 +1,10 @@
 package com.kbaje.eshop.services;
 
+import java.util.UUID;
+
 import com.kbaje.eshop.dto.AddProductToCartDto;
 import com.kbaje.eshop.dto.CartDto;
+import com.kbaje.eshop.dto.ChangeQuantityDto;
 import com.kbaje.eshop.exceptions.IllegalCartStateException;
 import com.kbaje.eshop.mapping.MapperProfile;
 import com.kbaje.eshop.models.AppUser;
@@ -87,5 +90,27 @@ public class CheckoutService {
         cart.postOrder();
 
         return mapper.cartToDto(cartRepository.save(cart));
+    }
+
+    public CartDto changeQuantity(ChangeQuantityDto payload) {
+        Cart cart = getUserCartImpl();
+        Product product = productRepository.findById(payload.productId).get();
+
+        cart.changeQuantity(product, payload.quantity);
+
+        cartRepository.save(cart);
+
+        return mapper.cartToDto(cart);
+    }
+
+    public CartDto removeProductFromCart(UUID productId) {
+        Cart cart = getUserCartImpl();
+        Product product = productRepository.findById(productId).get();
+
+        cart.removeProduct(product);
+
+        cartRepository.save(cart);
+
+        return mapper.cartToDto(cart);
     }
 }
