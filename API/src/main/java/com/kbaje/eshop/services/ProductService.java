@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.kbaje.eshop.dto.CreateProductDto;
 import com.kbaje.eshop.dto.EditProductDto;
 import com.kbaje.eshop.dto.ProductDto;
+import com.kbaje.eshop.exceptions.EntityNotFoundException;
 import com.kbaje.eshop.mapping.MapperProfile;
 import com.kbaje.eshop.models.Product;
 import com.kbaje.eshop.services.repositories.ProductRepository;
@@ -26,7 +27,8 @@ public class ProductService {
     }
 
     public ProductDto getById(UUID productId) {
-        Product product = repository.findById(productId).get();
+        Product product = repository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException(Product.class, productId));
 
         return mapper.productToDto(product);
     }
@@ -45,7 +47,8 @@ public class ProductService {
     }
 
     public ProductDto editProduct(UUID id, EditProductDto payload) {
-        Product entity = repository.findById(id).get();
+        Product entity = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(Product.class, id));
 
         entity.editName(payload.name);
         entity.editDescription(payload.description);

@@ -1,5 +1,6 @@
 package com.kbaje.eshop.services;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -7,6 +8,7 @@ import com.kbaje.eshop.dto.AuthDto;
 import com.kbaje.eshop.dto.AuthRequestDto;
 import com.kbaje.eshop.dto.CreateUserDto;
 import com.kbaje.eshop.dto.UserDto;
+import com.kbaje.eshop.exceptions.EntityNotFoundException;
 import com.kbaje.eshop.exceptions.UserAlreadyExistsException;
 import com.kbaje.eshop.mapping.MapperProfile;
 import com.kbaje.eshop.models.AppUser;
@@ -26,13 +28,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService implements UserDetailsService {
 
-    @Autowired
     private UserRepository userRepository;
 
-    @Autowired
     private MapperProfile mapper;
 
-    @Autowired
     private AccessTokenProvider accessTokenProvider;
 
     private PasswordEncoder passwordEncoder;
@@ -41,9 +40,13 @@ public class UserService implements UserDetailsService {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
-    public UserService() {
+
+    @Autowired
+    public UserService(UserRepository userRepository, MapperProfile mapper, AccessTokenProvider accessTokenProvider) {
         this.passwordEncoder = passwordEncoder();
+        this.userRepository = userRepository;
+        this.mapper = mapper;
+        this.accessTokenProvider = accessTokenProvider;
     }
 
     public AppUser getCurrentUser() {
@@ -51,7 +54,9 @@ public class UserService implements UserDetailsService {
     }
 
     public UserDto getById(UUID id) {
-        return mapper.userToDto(userRepository.findById(id).get());
+        return mapper.userToDto(
+                userRepository.findById(id)
+                        .orElseThrow(() -> new EntityNotFoundException(AppUser.class, id)));
     }
 
     public AuthDto authenticate(AuthRequestDto authRequest) {
@@ -65,14 +70,17 @@ public class UserService implements UserDetailsService {
             return new AuthDto(false, "", "Wrong password");
         }
 
-        return new AuthDto(true,
-                accessTokenProvider.getAccessToken(user.getId(), user.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority).collect(Collectors.toList())),
-                "Success");
+        List<String> authorityList = user.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+
+        String accessToken = accessTokenProvider.getAccessToken(user.getId(), authorityList);
+
+        return new AuthDto(true, accessToken, "Success");
     }
 
     public UserDto makeUserAdmin(UUID userId) {
-        AppUser user = userRepository.findById(userId).get();
+        AppUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(AppUser.class, userId));
         user.makeAdmin();
 
         return mapper.userToDto(userRepository.save(user));

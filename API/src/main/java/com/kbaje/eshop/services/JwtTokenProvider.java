@@ -3,6 +3,7 @@ package com.kbaje.eshop.services;
 import java.util.List;
 import java.util.UUID;
 
+import com.kbaje.eshop.exceptions.EntityNotFoundException;
 import com.kbaje.eshop.models.AppUser;
 import com.kbaje.eshop.services.repositories.UserRepository;
 
@@ -26,7 +27,8 @@ public class JwtTokenProvider implements AccessTokenProvider {
 
     @Override
     public String getAccessToken(UUID userId, List<String> roles) {
-        AppUser user = userRepository.findById(userId).get();
+        AppUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(AppUser.class, userId));
 
         String token = Jwts.builder()
                 .setSubject(userId.toString())
@@ -48,7 +50,8 @@ public class JwtTokenProvider implements AccessTokenProvider {
 
         String userId = claims.getSubject();
         UUID id = UUID.fromString(userId);
-        UserDetails user = userRepository.findById(id).get();
+        UserDetails user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(AppUser.class, id));
 
         return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
     }

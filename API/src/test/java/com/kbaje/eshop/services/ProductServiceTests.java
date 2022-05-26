@@ -1,6 +1,7 @@
 package com.kbaje.eshop.services;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -10,7 +11,9 @@ import java.util.List;
 import java.util.UUID;
 
 import com.kbaje.eshop.dto.CreateProductDto;
+import com.kbaje.eshop.dto.EditProductDto;
 import com.kbaje.eshop.dto.ProductDto;
+import com.kbaje.eshop.exceptions.EntityNotFoundException;
 import com.kbaje.eshop.mapping.MapperProfile;
 import com.kbaje.eshop.models.Product;
 import com.kbaje.eshop.services.repositories.ProductRepository;
@@ -47,10 +50,17 @@ public class ProductServiceTests {
                 .filter(p -> p.getId().equals(value.getArgument(0, UUID.class))).findFirst());
         when(productRepository.findAll()).thenReturn(testProducts);
         when(productRepository.save(any(Product.class))).thenAnswer(answer -> {
-            testProducts.add(answer.getArgument(0));
-
-            return answer.getArgument(0);
+            if (testProducts.stream().filter(p -> p.getId().equals(answer.getArgument(0, Product.class).getId()))
+                    .findFirst()
+                    .isPresent()) {
+                return answer.getArgument(0, Product.class);
+            } else {
+                testProducts.add(answer.getArgument(0, Product.class));
+                return answer.getArgument(0, Product.class);
+            }
         });
+        doAnswer(prod -> testProducts.removeIf(p -> p.getId().equals(prod.getArgument(0)))).when(productRepository)
+                .deleteById(any(UUID.class));
     }
 
     @Test
@@ -63,6 +73,16 @@ public class ProductServiceTests {
         assert productDto.description.equals(testProducts.get(0).getDescription());
         assert productDto.price.equals(testProducts.get(0).getPrice());
         assert productDto.imageUrl.equals(testProducts.get(0).getImageUrl());
+    }
+
+    @Test
+    public void shouldThrowWhenEntityNotFound() {
+        UUID id = UUID.randomUUID();
+        try {
+            productService.getById(id);
+        } catch (EntityNotFoundException e) {
+            assert e.getMessage().equals(String.format("Product with id %s not found", id.toString()));
+        }
     }
 
     @Test
@@ -93,6 +113,32 @@ public class ProductServiceTests {
         ProductDto newProduct = productService.createProduct(payload);
 
         assert testProducts.stream().anyMatch(x -> x.getId() == newProduct.id);
+    }
+
+    @Test
+    public void shouldEditProduct() {
+        EditProductDto payload = new EditProductDto();
+        payload.name = "NewName";
+        payload.description = "NewDesc";
+        payload.imageUrl = "newimg.png";
+        payload.price = new BigDecimal(2);
+        Product product = testProducts.get(0);
+
+        ProductDto updatedProduct = productService.editProduct(product.getId(), payload);
+
+        assert updatedProduct.name.equals(payload.name);
+        assert updatedProduct.description.equals(payload.description);
+        assert updatedProduct.imageUrl.equals(payload.imageUrl);
+        assert updatedProduct.price.equals(payload.price);
+        assert updatedProduct.id.equals(product.getId());
+    }
+
+    @Test
+    public void shouldRemoveProduct() {
+        Product product = testProducts.get(0);
+        productService.removeProduct(product.getId());
+
+        assert !testProducts.stream().anyMatch(x -> x.getId() == product.getId());
     }
 
 }

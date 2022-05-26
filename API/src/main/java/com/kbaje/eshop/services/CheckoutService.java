@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.kbaje.eshop.dto.AddProductToCartDto;
 import com.kbaje.eshop.dto.CartDto;
 import com.kbaje.eshop.dto.ChangeQuantityDto;
+import com.kbaje.eshop.exceptions.EntityNotFoundException;
 import com.kbaje.eshop.exceptions.IllegalCartStateException;
 import com.kbaje.eshop.mapping.MapperProfile;
 import com.kbaje.eshop.models.AppUser;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CheckoutService {
-    
+
     @Autowired
     private CartRepository cartRepository;
 
@@ -40,7 +41,8 @@ public class CheckoutService {
 
     public CartDto addProductToCart(AddProductToCartDto dto) {
         Cart cart = getUserCartImpl();
-        Product product = productRepository.findById(dto.productId).get();
+        Product product = productRepository.findById(dto.productId)
+                .orElseThrow(() -> new EntityNotFoundException(Product.class, dto.productId));
         CartProduct cartProduct = new CartProduct(cart, product, dto.quantity);
         cart.addProduct(cartProduct);
 
@@ -73,7 +75,7 @@ public class CheckoutService {
             throw new IllegalCartStateException("User already has a cart");
         }
 
-        Cart cart =  Cart.create(userDetails);
+        Cart cart = Cart.create(userDetails);
         cartRepository.save(cart);
 
         return cart;
@@ -88,7 +90,8 @@ public class CheckoutService {
 
     public CartDto changeQuantity(ChangeQuantityDto payload) {
         Cart cart = getUserCartImpl();
-        Product product = productRepository.findById(payload.productId).get();
+        Product product = productRepository.findById(payload.productId)
+                .orElseThrow(() -> new EntityNotFoundException(Product.class, payload.productId));
 
         cart.changeQuantity(product, payload.quantity);
 
@@ -99,7 +102,8 @@ public class CheckoutService {
 
     public CartDto removeProductFromCart(UUID productId) {
         Cart cart = getUserCartImpl();
-        Product product = productRepository.findById(productId).get();
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException(Product.class, productId));
 
         cart.removeProduct(product);
 
