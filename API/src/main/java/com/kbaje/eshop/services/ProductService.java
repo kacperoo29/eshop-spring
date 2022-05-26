@@ -15,11 +15,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProductService {
 
-    @Autowired
     private ProductRepository repository;
 
-    @Autowired
     private MapperProfile mapper;
+
+    @Autowired
+    public ProductService(ProductRepository repostiory, MapperProfile mapper) {
+        this.repository = repostiory;
+        this.mapper = mapper;
+    }
 
     public ProductDto getById(UUID productId) {
         Product product = repository.findById(productId).get();

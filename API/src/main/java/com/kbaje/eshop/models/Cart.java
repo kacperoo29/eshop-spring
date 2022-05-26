@@ -25,7 +25,7 @@ public class Cart extends BaseEntity {
     private CartState state;
 
     @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartProduct> products;
 
     protected Cart() {

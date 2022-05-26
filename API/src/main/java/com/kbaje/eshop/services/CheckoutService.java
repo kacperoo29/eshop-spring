@@ -11,7 +11,6 @@ import com.kbaje.eshop.models.AppUser;
 import com.kbaje.eshop.models.Cart;
 import com.kbaje.eshop.models.CartProduct;
 import com.kbaje.eshop.models.Product;
-import com.kbaje.eshop.services.repositories.CartProductRepository;
 import com.kbaje.eshop.services.repositories.CartRepository;
 import com.kbaje.eshop.services.repositories.ProductRepository;
 
@@ -33,9 +32,6 @@ public class CheckoutService {
     @Autowired
     private ProductRepository productRepository;
 
-    @Autowired
-    private CartProductRepository cartProductRepository;
-
     public CartDto createCart() {
         Cart cart = createCartImpl();
 
@@ -47,8 +43,6 @@ public class CheckoutService {
         Product product = productRepository.findById(dto.productId).get();
         CartProduct cartProduct = new CartProduct(cart, product, dto.quantity);
         cart.addProduct(cartProduct);
-
-        cartProductRepository.save(cartProduct);
 
         return mapper.cartToDto(cartRepository.save(cart));
     }
