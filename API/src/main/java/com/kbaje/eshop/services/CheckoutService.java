@@ -21,22 +21,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class CheckoutService {
 
-    @Autowired
     private CartRepository cartRepository;
 
-    @Autowired
     private MapperProfile mapper;
 
-    @Autowired
     private UserService userService;
 
-    @Autowired
     private ProductRepository productRepository;
 
-    public CartDto createCart() {
-        Cart cart = createCartImpl();
-
-        return mapper.cartToDto(cartRepository.save(cart));
+    @Autowired
+    public CheckoutService(CartRepository cartRepository, MapperProfile mapper, UserService userService,
+            ProductRepository productRepository) {
+        this.cartRepository = cartRepository;
+        this.mapper = mapper;
+        this.userService = userService;
+        this.productRepository = productRepository;
     }
 
     public CartDto addProductToCart(AddProductToCartDto dto) {
@@ -57,28 +56,6 @@ public class CheckoutService {
 
     public CartDto getUserCart() {
         return mapper.cartToDto(getUserCartImpl());
-    }
-
-    private Cart getUserCartImpl() {
-        Iterable<Cart> carts = cartRepository.getUserCarts(userService.getCurrentUser().getId());
-        if (carts.iterator().hasNext()) {
-            return carts.iterator().next();
-        } else {
-            return createCartImpl();
-        }
-    }
-
-    private Cart createCartImpl() {
-        AppUser userDetails = userService.getCurrentUser();
-        Iterable<Cart> carts = cartRepository.getUserCarts(userDetails.getId());
-        if (carts.iterator().hasNext()) {
-            throw new IllegalCartStateException("User already has a cart");
-        }
-
-        Cart cart = Cart.create(userDetails);
-        cartRepository.save(cart);
-
-        return cart;
     }
 
     public CartDto postOrder() {
@@ -110,5 +87,27 @@ public class CheckoutService {
         cartRepository.save(cart);
 
         return mapper.cartToDto(cart);
+    }
+
+    private Cart getUserCartImpl() {
+        Iterable<Cart> carts = cartRepository.getUserCarts(userService.getCurrentUser().getId());
+        if (carts.iterator().hasNext()) {
+            return carts.iterator().next();
+        } else {
+            return createCartImpl();
+        }
+    }
+
+    private Cart createCartImpl() {
+        AppUser userDetails = userService.getCurrentUser();
+        Iterable<Cart> carts = cartRepository.getUserCarts(userDetails.getId());
+        if (carts.iterator().hasNext()) {
+            throw new IllegalCartStateException("User already has a cart");
+        }
+
+        Cart cart = Cart.create(userDetails);
+        cartRepository.save(cart);
+
+        return cart;
     }
 }

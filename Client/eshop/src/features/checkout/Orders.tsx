@@ -51,7 +51,7 @@ export const Orders = () => {
               Total order price: $
               {order.products?.reduce(
                 (acc, item) =>
-                  acc + (item.product?.price ?? 0 * (item.quantity ?? 0)),
+                  acc + ((item.product?.price ?? 0) * (item.quantity ?? 0)),
                 0
               )}
             </h6>

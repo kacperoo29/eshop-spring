@@ -27,13 +27,24 @@ export const Checkout = () => {
           <h1>Checkout</h1>
           <div className="col-md-8">
             <h2>Cart</h2>
-            <ul>
-              {cart?.products?.map((item) => (
-                <li key={item.product?.id}>
-                  {item.product?.name} - ${item.product?.price}x{item.quantity}
-                </li>
-              ))}
-            </ul>
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cart?.products.map((product) => (
+                    <tr key={product.product?.id}>
+                      <td>{product.product?.name}</td>
+                      <td>{product.quantity}</td>
+                      <td>{product.product?.price}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
           </div>
           <div className="col-md-4">
             <h2>Total</h2>

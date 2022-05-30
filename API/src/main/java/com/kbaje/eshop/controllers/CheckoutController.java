@@ -33,12 +33,6 @@ public class CheckoutController {
     @Autowired
     private CheckoutService checkoutService;
 
-    @Operation(summary = "Create cart", description = "Create cart", security = @SecurityRequirement(name = "bearerAuth"))
-    @PostMapping("createCart")
-    public CartDto createCart() {
-        return checkoutService.createCart();
-    }
-
     @Operation(summary = "Add product to cart", description = "Add product to cart", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping("addProductToCart")
     public CartDto addProductToCart(@RequestBody AddProductToCartDto payload) {

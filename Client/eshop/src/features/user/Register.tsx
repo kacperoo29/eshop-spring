@@ -8,9 +8,15 @@ export const Register = () => {
   const dispatch = useAppDispatch();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
   const [username, setUsername] = React.useState("");
 
   const handleRegister = () => {
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+    
     dispatch(
       createUser({ email: email, username: username, password: password })
     ).then((r) => {
@@ -47,6 +53,13 @@ export const Register = () => {
           placeholder="Password"
           required
           onChange={(e) => setPassword(e.target.value)}
+        />
+        <input
+          className="from-control"
+          type="password"
+          placeholder="Confirm Password"
+          required
+          onChange={(e) => setConfirmPassword(e.target.value)}
         />
         <button
           className="btn btn-primary btn-block btn-signin btn-lg"
