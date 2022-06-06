@@ -1,6 +1,7 @@
 package com.kbaje.eshop;
 
 import com.kbaje.eshop.exceptions.EmptyFieldException;
+import com.kbaje.eshop.exceptions.EntityNotFoundException;
 import com.kbaje.eshop.exceptions.IllegalCartStateException;
 import com.kbaje.eshop.exceptions.InvalidEmailException;
 import com.kbaje.eshop.exceptions.InvalidPriceException;
@@ -25,4 +26,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
+    @ExceptionHandler({
+        EntityNotFoundException.class
+    })
+    public ResponseEntity<Object> handleEntityNotFoundException(RuntimeException ex) {
+        return ResponseEntity.notFound().build();
+    }
+    
 }

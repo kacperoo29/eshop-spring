@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { AddProductToCartDto, CartDto } from "../../api";
+import { AddProductToCartDto, CartDto, ChangeQuantityDto } from "../../api";
 import { RootState } from "../../app/store";
 import { checkoutApi } from "../apiInstances";
 
@@ -48,6 +48,24 @@ export const postOrder = createAsyncThunk(
     return response;
   }
 );
+
+export const changeQuantity = createAsyncThunk(
+  "checkout/changeQuantity",
+  async (payload: ChangeQuantityDto) => {
+    const response = await checkoutApi.changeQuantity({ changeQuantityDto: payload });
+
+    return response;
+  }
+);
+
+export const removeProduct = createAsyncThunk(
+  "checkout/removeProduct",
+  async (payload: string) => {
+    const response = await checkoutApi.removeProductFromCart({ productId: payload });
+
+    return response;
+  }
+)
 
 export const checkoutSlice = createSlice({
   name: "checkout",
@@ -100,13 +118,36 @@ export const checkoutSlice = createSlice({
     },
     [postOrder.pending.type]: (state) => {
       state.status = "loading";
+    },
+    // Change quantity
+    [changeQuantity.fulfilled.type]: (state, action) => {
+      state.status = "idle";
+    },
+    [changeQuantity.rejected.type]: (state, action) => {
+      state.status = "error";
+      state.error = action.error.message;
+    },
+    [changeQuantity.pending.type]: (state) => {
+      state.status = "loading";
+    },
+    // Remove product
+    [removeProduct.fulfilled.type]: (state, action) => {
+      state.cart = action.payload;
+      state.status = "idle";
+    },
+    [removeProduct.rejected.type]: (state, action) => {
+      state.status = "error";
+      state.error = action.error.message;
+    },
+    [removeProduct.pending.type]: (state) => {
+      state.status = "loading";
     }
   },
 });
 
 export const selectCart = (state: RootState) => state.checkout.cart;
 export const selectCheckoutStatus = (state: RootState) => state.checkout.status;
-export const selectError = (state: RootState) => state.checkout.error;
+export const selectCheckoutError = (state: RootState) => state.checkout.error;
 export const selectOrders = (state: RootState) => state.checkout.orders;
 
 export default checkoutSlice.reducer;

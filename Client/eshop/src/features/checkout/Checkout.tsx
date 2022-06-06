@@ -1,12 +1,13 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { getCart, postOrder, selectCart } from "./checkoutSlice";
+import { changeQuantity, getCart, postOrder, removeProduct, selectCart, selectCheckoutError } from "./checkoutSlice";
 
 export const Checkout = () => {
   const dispatch = useAppDispatch();
   const cart = useAppSelector(selectCart);
   const navigate = useNavigate();
+  const error = useAppSelector(selectCheckoutError);
 
   useEffect(() => {
     dispatch(getCart());
@@ -18,6 +19,22 @@ export const Checkout = () => {
     });
   };
 
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>, productId: string) => {
+    dispatch(changeQuantity({ productId: productId, quantity: e.target.valueAsNumber }))
+      .then(r => {
+        if (r.meta.requestStatus === "rejected")
+          alert(error)
+      })
+  }
+
+  const handleRemove = (productId: string) => {
+    dispatch(removeProduct(productId))
+      .then(r => {
+        if (r.meta.requestStatus === "rejected")
+          alert(error)
+      })
+  }
+
   return (
     <>
       {!cart?.products || cart?.products?.length < 1 ? (
@@ -27,24 +44,26 @@ export const Checkout = () => {
           <h1>Checkout</h1>
           <div className="col-md-8">
             <h2>Cart</h2>
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>Remove</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cart?.products.map((product) => (
+                  <tr key={product.product?.id}>
+                    <td>{product.product?.name}</td>
+                    <td><input className="form-control" type="number" value={product.quantity} onChange={(e) => handleQuantityChange(e, product.product?.id!)} /></td>
+                    <td>{product.product?.price}</td>
+                    <td><button className="btn btn-danger" onClick={() => handleRemove(product.product?.id!)}>Remove</button></td>
                   </tr>
-                </thead>
-                <tbody>
-                  {cart?.products.map((product) => (
-                    <tr key={product.product?.id}>
-                      <td>{product.product?.name}</td>
-                      <td>{product.quantity}</td>
-                      <td>{product.product?.price}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                ))}
+              </tbody>
+            </table>
           </div>
           <div className="col-md-4">
             <h2>Total</h2>
