@@ -16,6 +16,8 @@ import com.kbaje.eshop.services.repositories.CartRepository;
 import com.kbaje.eshop.services.repositories.ProductRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,13 +31,16 @@ public class CheckoutService {
 
     private ProductRepository productRepository;
 
+    private JavaMailSender mailSender;
+
     @Autowired
     public CheckoutService(CartRepository cartRepository, MapperProfile mapper, UserService userService,
-            ProductRepository productRepository) {
+            ProductRepository productRepository, JavaMailSender sender) {
         this.cartRepository = cartRepository;
         this.mapper = mapper;
         this.userService = userService;
         this.productRepository = productRepository;
+        this.mailSender = sender;
     }
 
     public CartDto addProductToCart(AddProductToCartDto dto) {
@@ -61,6 +66,20 @@ public class CheckoutService {
     public CartDto postOrder() {
         Cart cart = getUserCartImpl();
         cart.postOrder();
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(cart.getUser().getEmail());
+        message.setSubject("Order confirmation");
+        StringBuilder sb = new StringBuilder();
+        sb.append("Thank you for your order!\n");
+        sb.append("Your order number is: ").append(cart.getId()).append("\n");
+        sb.append("Your order contents:\n");
+        for (CartProduct product : cart.getProducts()) {
+            sb.append(product.getProduct().getName()).append(" x ").append(product.getQuantity()).append("\n");
+        }
+
+        message.setText(sb.toString());
+        mailSender.send(message);
 
         return mapper.cartToDto(cartRepository.save(cart));
     }

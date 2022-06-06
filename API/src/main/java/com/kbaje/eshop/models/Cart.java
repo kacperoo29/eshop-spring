@@ -44,6 +44,10 @@ public class Cart extends BaseEntity {
         return new Cart(user);
     }
 
+    public AppUser getUser() {
+        return user;
+    }
+
     public List<CartProduct> getProducts() {
         return products;
     }

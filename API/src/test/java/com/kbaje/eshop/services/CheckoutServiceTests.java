@@ -28,6 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
+import org.springframework.mail.javamail.JavaMailSender;
 
 public class CheckoutServiceTests {
 
@@ -41,6 +42,9 @@ public class CheckoutServiceTests {
     private UserService userService;
 
     private CheckoutService checkoutService;
+
+    @Mock
+    private JavaMailSender mailSender;
 
     private MapperProfile mapperProfile = Mappers.getMapper(MapperProfile.class);
 
@@ -98,7 +102,10 @@ public class CheckoutServiceTests {
                     .collect(Collectors.toList());
         });
 
-        checkoutService = new CheckoutService(cartRepository, mapperProfile, userService, productRepository);
+        mailSender = mock(JavaMailSender.class);
+
+        checkoutService = new CheckoutService(cartRepository, mapperProfile, userService, productRepository,
+                mailSender);
     }
 
     @Test
