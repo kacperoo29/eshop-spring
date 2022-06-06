@@ -3,6 +3,7 @@ import { useAppDispatch } from "../../app/hooks";
 
 import { createUser } from "./userSlice";
 import "./Login.css";
+import { useNavigate } from "react-router-dom";
 
 export const Register = () => {
   const dispatch = useAppDispatch();
@@ -10,20 +11,22 @@ export const Register = () => {
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [username, setUsername] = React.useState("");
+  const navigate = useNavigate();
 
   const handleRegister = () => {
     if (password !== confirmPassword) {
       alert("Passwords do not match");
       return;
     }
-    
+
     dispatch(
       createUser({ email: email, username: username, password: password })
     ).then((r) => {
       if (r.meta.requestStatus === "rejected") {
         alert("Something went wrong");
       } else {
-        alert("Successfully registered");
+        alert("User created. Redirecting...");
+        navigate("/login");
       }
     });
   };

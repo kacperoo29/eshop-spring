@@ -6,14 +6,16 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.PreRemove;
 import javax.validation.constraints.Size;
 
 import com.kbaje.eshop.exceptions.EmptyFieldException;
 import com.kbaje.eshop.exceptions.InvalidPriceException;
+import com.kbaje.eshop.exceptions.ProductReferencedException;
 
 @Entity
 public final class Product extends BaseEntity {
-    
+
     @Column(length = 100)
     @Size(min = 1, max = 100)
     private String name;
@@ -33,7 +35,7 @@ public final class Product extends BaseEntity {
     private List<CartProduct> carts;
 
     protected Product() {
-        
+
     }
 
     protected Product(String name, String description, BigDecimal price, String imageUrl) {
@@ -105,4 +107,9 @@ public final class Product extends BaseEntity {
         this.imageUrl = imageUrl;
     }
 
+    @PreRemove
+    private void preRemove() {
+        if (!carts.isEmpty())
+            throw new ProductReferencedException(getId());
+    }
 }

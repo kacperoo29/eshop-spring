@@ -8,7 +8,6 @@ import com.kbaje.eshop.models.AppUser;
 import com.kbaje.eshop.services.repositories.UserRepository;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
@@ -50,7 +49,7 @@ public class JwtTokenProvider implements AccessTokenProvider {
 
         String userId = claims.getSubject();
         UUID id = UUID.fromString(userId);
-        UserDetails user = userRepository.findById(id)
+        AppUser user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(AppUser.class, id));
 
         return new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());

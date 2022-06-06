@@ -5,6 +5,7 @@ import com.kbaje.eshop.exceptions.EntityNotFoundException;
 import com.kbaje.eshop.exceptions.IllegalCartStateException;
 import com.kbaje.eshop.exceptions.InvalidEmailException;
 import com.kbaje.eshop.exceptions.InvalidPriceException;
+import com.kbaje.eshop.exceptions.ProductReferencedException;
 import com.kbaje.eshop.exceptions.UserAlreadyExistsException;
 
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             InvalidEmailException.class,
             IllegalCartStateException.class,
             InvalidPriceException.class,
-            EmptyFieldException.class
+            EmptyFieldException.class,
+            ProductReferencedException.class
     })
     public ResponseEntity<Object> handleUserException(RuntimeException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());

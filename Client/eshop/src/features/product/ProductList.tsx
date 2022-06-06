@@ -10,7 +10,8 @@ import {
 } from "../user/userSlice";
 import {
   fetchProducts,
-  selectError,
+  removeProduct,
+  selectProductError,
   selectLoading,
   selectProducts,
 } from "./productSlice";
@@ -19,7 +20,7 @@ export const ProductList = () => {
   const dispatch = useAppDispatch();
   const products = useAppSelector(selectProducts);
   const loading = useAppSelector(selectLoading);
-  const error = useAppSelector(selectError);
+  const error = useAppSelector(selectProductError);
   const user = useAppSelector(selectUser);
   const isAuthenticated = useAppSelector(selectIsLoggedIn);
   const navigate = useNavigate();
@@ -36,6 +37,12 @@ export const ProductList = () => {
     });
     if (isAuthenticated) dispatch(getUserDetails());
   }, [dispatch, isAuthenticated]);
+
+  const handleRemove = (productId: string) => {
+    dispatch(removeProduct(productId)).then((r) => {
+      if (r.meta.requestStatus === "rejected") alert("Can't remove product that is referenced in cart or order");
+    });
+  }
 
   return (
     <div>
@@ -107,12 +114,15 @@ export const ProductList = () => {
                 </div>
                 <div>
                   {user?.role?.toLowerCase() === "admin" && (
-                    <Link
-                      className="btn btn-secondary"
-                      to={`/products/edit/${product.id}`}
-                    >
-                      Edit
-                    </Link>
+                    <>
+                      <Link
+                        className="btn btn-secondary"
+                        to={`/products/edit/${product.id}`}
+                      >
+                        Edit
+                      </Link>
+                      <button className="btn btn-danger" onClick={() => handleRemove(product.id!)}>Delete</button>
+                    </>
                   )}
                 </div>
               </>

@@ -49,6 +49,15 @@ export const editProduct = createAsyncThunk(
   }
 );
 
+export const removeProduct = createAsyncThunk(
+  "product/removeProduct",
+  async (id: string) => {
+    const response = await productApi.remove({ id });
+
+    return response;
+  }
+);
+
 const initialState: ProductState = {
   products: [],
   product: {} as ProductDto,
@@ -118,6 +127,20 @@ export const productSlice = createSlice({
       state.status = "failed";
       state.error = action.error.message;
     },
+    // Remove product
+    [removeProduct.fulfilled.type]: (state, action) => {
+      state.status = "idle";
+      state.products = state.products.filter(
+        (product) => product.id !== action.meta.arg
+      );
+    },
+    [removeProduct.pending.type]: (state) => {
+      state.status = "loading";
+    },
+    [removeProduct.rejected.type]: (state, action) => {
+      state.status = "failed";
+      state.error = action.error.message;
+    },
   },
 });
 
@@ -127,6 +150,6 @@ export const selectProduct = (state: RootState) => state.product.product;
 export const selectProducts = (state: RootState) => state.product.products;
 export const selectLoading = (state: RootState) =>
   state.product.status === "loading";
-export const selectError = (state: RootState) => state.product.error;
+export const selectProductError = (state: RootState) => state.product.error;
 
 export default productSlice.reducer;
