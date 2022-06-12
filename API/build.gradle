@@ -3,6 +3,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 	id 'jacoco'
+	id 'war'
 }
 
 group = 'com.kbaje'
@@ -16,8 +17,16 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation( 'org.springframework.boot:spring-boot-starter-web')	{
+		exclude module: 'spring-boot-starter-tomcat'
+	}
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+
+	compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+
+	implementation 'com.querydsl:querydsl-jpa:5.0.0'
+	implementation 'com.unboundid:unboundid-ldapsdk:6.0.5'
 
 	implementation 'org.springframework.security:spring-security-core'
 	implementation 'org.springframework.security:spring-security-config'

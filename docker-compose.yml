@@ -10,7 +10,9 @@ services:
   api:
     build: ./API
     ports:
-      - 5000:8080
+      - 8080:8080
+      - 5000:5000
+      - 4848:4848
     depends_on:
       - db
     volumes:
