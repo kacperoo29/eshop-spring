@@ -10,6 +10,8 @@ import com.kbaje.eshop.mapping.MapperProfile;
 import com.kbaje.eshop.models.Product;
 import com.kbaje.eshop.services.repositories.ProductRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,8 @@ public class ProductService {
 
     private MapperProfile mapper;
 
+    private Logger logger = LoggerFactory.getLogger(ProductService.class);
+
     @Autowired
     public ProductService(ProductRepository repostiory, MapperProfile mapper) {
         this.repository = repostiory;
@@ -28,7 +32,10 @@ public class ProductService {
 
     public ProductDto getById(UUID productId) {
         Product product = repository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException(Product.class, productId));
+                .orElseThrow(() -> {
+                    logger.error("Product with id {} not found", productId);
+                    return new EntityNotFoundException(Product.class, productId);
+                });
 
         return mapper.productToDto(product);
     }
@@ -43,12 +50,16 @@ public class ProductService {
         Product entity = Product.create(payload.name, payload.description, payload.price, payload.imageUrl);
         Product product = repository.save(entity);
 
+        logger.info("Created product with id: {}", product.getId());
         return mapper.productToDto(product);
     }
 
     public ProductDto editProduct(UUID id, EditProductDto payload) {
         Product entity = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(Product.class, id));
+                .orElseThrow(() -> {
+                    logger.error("Product with id: {} not found", id);
+                    return new EntityNotFoundException(Product.class, id);
+                });
 
         entity.editName(payload.name);
         entity.editDescription(payload.description);
@@ -57,6 +68,7 @@ public class ProductService {
 
         Product product = repository.save(entity);
 
+        logger.info("Edited product with id: {}", product.getId());
         return mapper.productToDto(product);
     }
 
