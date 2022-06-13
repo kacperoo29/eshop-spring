@@ -21,11 +21,11 @@ public final class Product extends BaseEntity {
     private String name;
 
     @Column(length = 1000)
-    @Size(min = 5, max = 1000)
+    @Size(min = 3, max = 1000)
     private String description;
 
     @Column(length = 1000)
-    @Size(min = 5, max = 1000)
+    @Size(min = 3, max = 1000)
     private String imageUrl;
 
     @Column(scale = 2)

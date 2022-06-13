@@ -93,7 +93,7 @@ public class CheckoutService {
         sb.append("Your order number is: ").append(cart.getId()).append("\n");
         sb.append("Your order contents:\n");
         for (CartProduct product : cart.getProducts()) {
-            sb.append(product.getProduct().getName()).append(" x ").append(product.getQuantity()).append(" @ ")
+            sb.append(product.getProduct().getName()).append(" x ").append(product.getQuantity()).append(" @ $")
                     .append(product.getProduct().getPrice()).append("\n");
         }
 

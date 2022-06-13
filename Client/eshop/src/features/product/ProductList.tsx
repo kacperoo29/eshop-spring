@@ -12,14 +12,14 @@ import {
   fetchProducts,
   removeProduct,
   selectProductError,
-  selectLoading,
+  selectProductLoading,
   selectProducts,
 } from "./productSlice";
 
 export const ProductList = () => {
   const dispatch = useAppDispatch();
   const products = useAppSelector(selectProducts);
-  const loading = useAppSelector(selectLoading);
+  const loading = useAppSelector(selectProductLoading);
   const error = useAppSelector(selectProductError);
   const user = useAppSelector(selectUser);
   const isAuthenticated = useAppSelector(selectIsLoggedIn);
@@ -31,7 +31,7 @@ export const ProductList = () => {
     dispatch(fetchProducts()).then((r) => {
       if (r.meta.requestStatus === "fulfilled") {
         (r.payload as ProductDto[]).forEach((p) => {
-          setQuantity(q => ({ ...q, [p.id!]: 1 }));
+          setQuantity((q) => ({ ...q, [p.id!]: 1 }));
         });
       }
     });
@@ -40,9 +40,10 @@ export const ProductList = () => {
 
   const handleRemove = (productId: string) => {
     dispatch(removeProduct(productId)).then((r) => {
-      if (r.meta.requestStatus === "rejected") alert("Can't remove product that is referenced in cart or order");
+      if (r.meta.requestStatus === "rejected")
+        alert("Can't remove product that is referenced in cart or order");
     });
-  }
+  };
 
   return (
     <div>
@@ -121,7 +122,12 @@ export const ProductList = () => {
                       >
                         Edit
                       </Link>
-                      <button className="btn btn-danger" onClick={() => handleRemove(product.id!)}>Delete</button>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => handleRemove(product.id!)}
+                      >
+                        Delete
+                      </button>
                     </>
                   )}
                 </div>

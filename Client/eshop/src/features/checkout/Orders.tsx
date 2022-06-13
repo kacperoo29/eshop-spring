@@ -41,7 +41,10 @@ export const Orders = () => {
                     <td>{item.quantity}</td>
                     <td>${item.product?.price}</td>
                     <td>
-                      ${(item.product?.price ?? 0) * (item.quantity ?? 0)}
+                      $
+                      {(
+                        (item.product?.price ?? 0) * (item.quantity ?? 0)
+                      ).toFixed(2)}
                     </td>
                   </tr>
                 ))}

@@ -148,7 +148,7 @@ export const { actions } = productSlice;
 
 export const selectProduct = (state: RootState) => state.product.product;
 export const selectProducts = (state: RootState) => state.product.products;
-export const selectLoading = (state: RootState) =>
+export const selectProductLoading = (state: RootState) =>
   state.product.status === "loading";
 export const selectProductError = (state: RootState) => state.product.error;
 

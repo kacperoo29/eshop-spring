@@ -119,6 +119,7 @@ export const selectIsSuccess = (state: RootState) =>
 export const selectAuthError = (state: RootState) =>
   state.user.authResult?.errorMessage;
 export const selectUserError = (state: RootState) => state.user.error;
+export const selectUserStatus = (state: RootState) => state.user.status;
 
 export const { logout } = userSlice.actions;
 
