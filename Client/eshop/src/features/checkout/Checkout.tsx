@@ -9,6 +9,7 @@ import {
   removeProduct,
   selectCart,
   selectCheckoutError,
+  selectCheckoutStatus,
 } from "./checkoutSlice";
 
 export const Checkout = () => {
@@ -17,6 +18,7 @@ export const Checkout = () => {
   const navigate = useNavigate();
   const error = useAppSelector(selectCheckoutError);
   const [quantity, setQuantity] = useState<{ [id: string]: number }>();
+  const status = useAppSelector(selectCheckoutStatus);
 
   useEffect(() => {
     dispatch(getCart()).then((r) => {
@@ -105,11 +107,15 @@ export const Checkout = () => {
             <h2>Total</h2>
             <p>
               $
-              {cart?.products?.reduce(
-                (acc, item) =>
-                  acc + ((item.product?.price ?? 0) * (quantity ? quantity[item.product?.id!] : 1)),
-                0
-              ).toFixed(2)}
+              {cart?.products
+                ?.reduce(
+                  (acc, item) =>
+                    acc +
+                    (item.product?.price ?? 0) *
+                      (quantity ? quantity[item.product?.id!] : 1),
+                  0
+                )
+                .toFixed(2)}
             </p>
             <button className="btn btn-primary" onClick={handleCheckout}>
               Checkout

@@ -18,6 +18,7 @@ import com.kbaje.eshop.services.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -67,6 +68,13 @@ public class CheckoutService {
         Cart cart = getUserCartImpl();
         cart.postOrder();
 
+        this.sendMail(cart);
+
+        return mapper.cartToDto(cartRepository.save(cart));
+    }
+    
+    @Async
+    private void sendMail(Cart cart) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(cart.getUser().getEmail());
         message.setSubject("Order confirmation");
@@ -75,13 +83,12 @@ public class CheckoutService {
         sb.append("Your order number is: ").append(cart.getId()).append("\n");
         sb.append("Your order contents:\n");
         for (CartProduct product : cart.getProducts()) {
-            sb.append(product.getProduct().getName()).append(" x ").append(product.getQuantity()).append("\n");
+            sb.append(product.getProduct().getName()).append(" x ").append(product.getQuantity()).append(" @ ")
+                    .append(product.getProduct().getPrice()).append("\n");
         }
 
         message.setText(sb.toString());
         mailSender.send(message);
-
-        return mapper.cartToDto(cartRepository.save(cart));
     }
 
     public CartDto changeQuantity(ChangeQuantityDto payload) {
