@@ -23,9 +23,9 @@ USER root
 RUN chmod 644 postgresql-42.4.0.jar
 USER payara
 
+# Create connection pool to postgres
+RUN echo "create-jdbc-connection-pool --restype javax.sql.DataSource --datasourceclassname org.postgresql.ds.PGSimpleDataSource --property serverName=db:port=5432:databaseName=postgres:user=postgres:password=SY2Z74RzUx8Afs6d:useSSL=false eshop-pool" >> $PREBOOT_COMMANDS
+# Create JDBC resource
+RUN echo "create-jdbc-resource --connectionpoolid eshop-pool jdbc/eshop" >> $PREBOOT_COMMANDS
 # Deploy the WAR file to the server
 RUN echo "deploy --name eshop --contextroot / eshop.war" >> $POSTBOOT_COMMANDS
-
-# Create connection pool to postgres
-RUN echo "create-jdbc-connection-pool --restype javax.sql.DataSource --datasourceclassname org.postgresql.ds.PGSimpleDataSource --property serverName=db:port=5432:databaseName=postgres:user=postgres:password=SY2Z74RzUx8Afs6d:useSSL=false eshop-pool" >> $POSTBOOT_COMMANDS
-

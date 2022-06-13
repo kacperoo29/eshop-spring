@@ -55,6 +55,8 @@ export const Checkout = () => {
     });
   };
 
+  if (status === "loading") return <div>Loading...</div>;
+
   return (
     <>
       {!cart?.products || cart?.products?.length < 1 ? (

@@ -49,11 +49,13 @@ export const Orders = () => {
             </table>
             <h6>
               Total order price: $
-              {order.products?.reduce(
-                (acc, item) =>
-                  acc + ((item.product?.price ?? 0) * (item.quantity ?? 0)),
-                0
-              )}
+              {order.products
+                ?.reduce(
+                  (acc, item) =>
+                    acc + (item.product?.price ?? 0) * (item.quantity ?? 0),
+                  0
+                )
+                .toFixed(2)}
             </h6>
           </div>
         ))}

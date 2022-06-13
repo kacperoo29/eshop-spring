@@ -18,8 +18,9 @@ services:
     volumes:
       - gradle_cache:/app/.gradle
       - dep_cache:/root/.gradle
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+    #environment:
+      #- SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+      #- SPRING_DATASOURCE_URL=jdbc:jdbc/eshop-pool
   client:
     build: ./Client
     ports:
